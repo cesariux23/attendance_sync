@@ -1,0 +1,16 @@
+{
+  "name": "attendance_sync",
+  "version": "1.0.0",
+  "description": "Servicio de sincronizacion de asistencia",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "author": "cesariux23@gmail.com",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.15.4",
+    "socket.io": "^2.0.3"
+  }
+}
