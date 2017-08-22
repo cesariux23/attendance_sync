@@ -4,30 +4,55 @@ var app = express();
 var server = require('http').createServer(app);  
 var io = require('socket.io')(server);
 var czs =io.of('czs')
-var coordinaciones = new Map();
-var clientes = new Map();
 
 app.use(express.static(__dirname + '/node_modules'));  
 app.get('/', function(req, res,next) {  
     res.sendFile(__dirname + '/views/index.html');
 });
 
-czs.on('connection', function(client) {  
+var coordinaciones = {}
+var clientes = new Map();
+var coords = [];
+var test = 'test';
+
+czs.on('connection', function(client) {
+
     console.log('Client connected...');
     client.on('join', function(data) {
-        coordinaciones.set(data.zona, client.id);
+        coordinaciones[data.zona] = client.id;
         clientes.set(client.id, data.zona);
+        coords.push(data);
         console.log(coordinaciones);
-        client.emit('messages', 'Hello from server');
+        client.emit('messages', 'Conectado');
+        client.broadcast.emit('online', {coordinaciones});
     });
+
+    client.on('reqZonas', function(data) {
+        client.emit('online', {coordinaciones});
+    });
+
+    client.on('reqSync', function(data) {
+        client.broadcast.to([data]).emit('getLastEvents', new Date());
+    });
+
+    client.on('sendAttEvents', function(data) {
+        console.log('eventos recibidos: '+data);
+    });
+
     client.on('disconnect', function() {
         cz = clientes.get(client.id);
-        if(coordinaciones.has(cz)){
-            coordinaciones.delete(cz);
+        if(coordinaciones.hasOwnProperty(cz)){
+            //(coordinaciones.delete(cz);
+            delete coordinaciones[cz];
         }
-        console.log('cliente desconenctado: '+cz);
+        console.log('cliente desconectado: '+cz);
         console.log(coordinaciones);
+        coords=coords.splice(coords.lastIndexOf(cz),1);
+        client.broadcast.emit('online',{coordinaciones});
     });
 });
+
+
+
 
 server.listen(4200);  

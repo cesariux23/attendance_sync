@@ -5,21 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Asistencia IVEA</title>
-    
 </head>
 <body>
-    <h1>Hola</h1>
-
+    <h1>Sync</h1>
+    <h3>En linea</h3>
+    <ul id="online">
+    </ul>
     <script src="/socket.io/socket.io.js"></script>
     <script>  
-        var socket = io.connect('http://localhost:4200/czs');
+        var socket = io.connect('/czs');
         socket.on('connect', function(data) {
-            socket.emit('join',{'zona':'DG'} );
+            socket.emit('join',{'zona':'DIRECCIÓN GENERAL'} );
+            socket.emit('reqZonas');
         });
 
         socket.on('messages', function(data) {
-                alert(data);
+                console.log(data);
         });
+        socket.on('online', function(data) {
+                clients = ''
+                console.log(data)
+                Object.keys(data.coordinaciones).forEach(function(index) {
+                    id = data.coordinaciones[index]
+                    clients +='<li id="'+id+'" onClick="syncClient()">'+index+"</li>";
+                });
+                lista = document.getElementById('online');
+                lista.innerHTML = clients;
+        });
+        
+        function syncClient() {
+            id=event.target.id;
+            socket.emit('reqSync',id);
+        }
     </script> 
 </body>
 </html>
