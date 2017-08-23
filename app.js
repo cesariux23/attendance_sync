@@ -36,7 +36,12 @@ czs.on('connection', function(client) {
     });
 
     client.on('sendAttEvents', function(data) {
-        console.log('eventos recibidos: '+data);
+        console.log('eventos recibidos: ');
+        data.forEach(function(element) {
+            console.log(element.user);
+            console.log(element.verifyMode);
+            console.log(element.date);
+        });
     });
 
     client.on('disconnect', function() {
