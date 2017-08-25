@@ -37,7 +37,7 @@ czs.on('connection', function(client) {
 
     client.on('sendAttEvents', function(data) {
         console.log('eventos recibidos: ');
-        data.forEach(function(element) {
+        data.eventos.forEach(function(element) {
             console.log(element.user);
             console.log(element.verifyMode);
             console.log(element.date);
@@ -47,7 +47,6 @@ czs.on('connection', function(client) {
     client.on('disconnect', function() {
         cz = clientes.get(client.id);
         if(coordinaciones.hasOwnProperty(cz)){
-            //(coordinaciones.delete(cz);
             delete coordinaciones[cz];
         }
         console.log('cliente desconectado: '+cz);
@@ -56,8 +55,5 @@ czs.on('connection', function(client) {
         client.broadcast.emit('online',{coordinaciones});
     });
 });
-
-
-
 
 server.listen(4200);  
